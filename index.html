@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎆 Happy New Year 🎆</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;800&display=swap" rel="stylesheet">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
+}
+body{
+  min-height:100vh;
+  background:radial-gradient(circle at top,#1a0033,#000);
+  overflow-x:hidden;
+  color:#fff;
+}
+canvas{
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:-1;
+}
+.container{
+  max-width:420px;
+  margin:auto;
+  padding:20px;
+  text-align:center;
+}
+.card{
+  background:rgba(255,255,255,0.1);
+  backdrop-filter:blur(15px);
+  border-radius:20px;
+  padding:25px;
+  box-shadow:0 0 40px rgba(255,0,255,0.3);
+  animation:pop 1s ease;
+}
+@keyframes pop{
+  from{transform:scale(0.8);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+h1{
+  font-size:28px;
+  background:linear-gradient(90deg,#ff00cc,#00ffff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:glow 2s infinite alternate;
+}
+@keyframes glow{
+  from{text-shadow:0 0 10px #ff00cc}
+  to{text-shadow:0 0 25px #00ffff}
+}
+input{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  margin-top:15px;
+  outline:none;
+  font-size:16px;
+}
+input[type=file]{
+  background:#fff;
+}
+button{
+  margin-top:18px;
+  padding:14px;
+  width:100%;
+  border:none;
+  border-radius:14px;
+  font-size:18px;
+  font-weight:700;
+  background:linear-gradient(90deg,#ff00cc,#00ffff);
+  color:#000;
+  cursor:pointer;
+  transition:0.3s;
+}
+button:hover{
+  transform:scale(1.05);
+}
+.result{
+  display:none;
+  margin-top:20px;
+}
+.result img{
+  width:160px;
+  height:160px;
+  object-fit:cover;
+  border-radius:50%;
+  border:4px solid #fff;
+  box-shadow:0 0 30px #ff00cc;
+}
+.wish{
+  margin-top:15px;
+  font-size:22px;
+  font-weight:600;
+}
+.footer{
+  margin-top:15px;
+  font-size:12px;
+  opacity:0.7;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="fireworks"></canvas>
+
+<div class="container">
+  <div class="card">
+    <h1>🎉 Happy New Year 🎉</h1>
+
+    <input type="text" id="name" placeholder="Enter your name">
+    <input type="file" id="photo" accept="image/*">
+
+    <button onclick="generate()">Generate Wishes</button>
+
+    <div class="result" id="result">
+      <img id="preview">
+      <div class="wish" id="wishText"></div>
+    </div>
+
+    <div class="footer">✨ Made with ❤️ | Ultra Pro Max ✨</div>
+  </div>
+</div>
+
+<script>
+// FIREWORKS
+const canvas = document.getElementById("fireworks");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles=[];
+function firework(){
+  let x=Math.random()*canvas.width;
+  let y=Math.random()*canvas.height/2;
+  for(let i=0;i<60;i++){
+    particles.push({
+      x,y,
+      vx:(Math.random()-0.5)*6,
+      vy:(Math.random()-0.5)*6,
+      life:100,
+      color:`hsl(${Math.random()*360},100%,60%)`
+    });
+  }
+}
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach((p,i)=>{
+    p.x+=p.vx;
+    p.y+=p.vy;
+    p.life--;
+    ctx.fillStyle=p.color;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,2,0,Math.PI*2);
+    ctx.fill();
+    if(p.life<=0)particles.splice(i,1);
+  });
+  requestAnimationFrame(animate);
+}
+setInterval(firework,900);
+animate();
+
+// GENERATE
+function generate(){
+  let name=document.getElementById("name").value;
+  let file=document.getElementById("photo").files[0];
+  if(!name||!file){
+    alert("Name aur Photo dono daalo!");
+    return;
+  }
+  let reader=new FileReader();
+  reader.onload=()=>{
+    document.getElementById("preview").src=reader.result;
+    document.getElementById("wishText").innerHTML=
+      `✨ Happy New Year <span style="color:#00ffff">${name}</span> ✨<br>
+      May your life shine brighter than fireworks 🎆`;
+    document.getElementById("result").style.display="block";
+    firework();
+  };
+  reader.readAsDataURL(file);
+}
+</script>
+
+</body>
+</html>
