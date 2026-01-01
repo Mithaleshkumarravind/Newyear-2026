@@ -3,189 +3,227 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎆 Happy New Year 🎆</title>
+<title>3D Happy New Year 🎆</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;900&display=swap" rel="stylesheet">
 
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:'Poppins',sans-serif;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Orbitron',sans-serif}
+
 body{
   min-height:100vh;
   background:radial-gradient(circle at top,#1a0033,#000);
-  overflow-x:hidden;
+  overflow:hidden;
+  perspective:1200px;
   color:#fff;
 }
+
+/* MOVING BACKGROUND */
+.bg{
+  position:fixed;
+  inset:0;
+  background:linear-gradient(-45deg,#0f0c29,#302b63,#24243e,#000);
+  background-size:400% 400%;
+  animation:bg 12s infinite ease;
+  z-index:-3;
+}
+@keyframes bg{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+/* FIREWORK CANVAS */
 canvas{
   position:fixed;
-  top:0;
-  left:0;
-  z-index:-1;
+  inset:0;
+  z-index:-2;
 }
-.container{
-  max-width:420px;
-  margin:auto;
+
+/* CONTAINER */
+.wrap{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   padding:20px;
-  text-align:center;
 }
+
+/* 3D CARD */
 .card{
-  background:rgba(255,255,255,0.1);
-  backdrop-filter:blur(15px);
-  border-radius:20px;
-  padding:25px;
-  box-shadow:0 0 40px rgba(255,0,255,0.3);
-  animation:pop 1s ease;
+  width:100%;
+  max-width:420px;
+  background:rgba(0,0,0,0.45);
+  backdrop-filter:blur(18px);
+  border-radius:28px;
+  padding:30px;
+  text-align:center;
+  transform-style:preserve-3d;
+  transition:transform 0.15s ease;
+  box-shadow:0 40px 80px rgba(0,0,0,0.7);
 }
-@keyframes pop{
-  from{transform:scale(0.8);opacity:0}
-  to{transform:scale(1);opacity:1}
-}
+
+/* 3D TEXT */
 h1{
-  font-size:28px;
-  background:linear-gradient(90deg,#ff00cc,#00ffff);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  animation:glow 2s infinite alternate;
+  font-size:30px;
+  transform:translateZ(40px);
+  text-shadow:
+    0 0 15px #ff00ff,
+    0 0 35px #00ffff;
+  animation:textPulse 1.5s infinite alternate;
 }
-@keyframes glow{
-  from{text-shadow:0 0 10px #ff00cc}
-  to{text-shadow:0 0 25px #00ffff}
+@keyframes textPulse{
+  from{letter-spacing:2px}
+  to{letter-spacing:6px}
 }
-input{
+
+input,button{
   width:100%;
   padding:14px;
-  border:none;
-  border-radius:12px;
-  margin-top:15px;
-  outline:none;
-  font-size:16px;
-}
-input[type=file]{
-  background:#fff;
-}
-button{
-  margin-top:18px;
-  padding:14px;
-  width:100%;
   border:none;
   border-radius:14px;
-  font-size:18px;
-  font-weight:700;
-  background:linear-gradient(90deg,#ff00cc,#00ffff);
-  color:#000;
+  margin-top:15px;
+  font-size:16px;
+}
+
+button{
+  font-weight:900;
+  background:linear-gradient(90deg,#ff00ff,#00ffff);
   cursor:pointer;
-  transition:0.3s;
+  transform:translateZ(30px);
 }
-button:hover{
-  transform:scale(1.05);
-}
+
+/* RESULT */
 .result{
   display:none;
-  margin-top:20px;
+  margin-top:25px;
+  transform-style:preserve-3d;
 }
+
 .result img{
-  width:160px;
-  height:160px;
+  width:170px;
+  height:170px;
   object-fit:cover;
   border-radius:50%;
-  border:4px solid #fff;
-  box-shadow:0 0 30px #ff00cc;
+  border:5px solid #fff;
+  transform:translateZ(60px) rotateY(0deg);
+  animation:photo3d 3s infinite alternate ease-in-out;
+  box-shadow:0 0 40px #ff00ff;
 }
+@keyframes photo3d{
+  from{transform:translateZ(60px) rotateY(-15deg)}
+  to{transform:translateZ(90px) rotateY(15deg)}
+}
+
 .wish{
   margin-top:15px;
   font-size:22px;
-  font-weight:600;
+  transform:translateZ(35px);
 }
-.footer{
-  margin-top:15px;
-  font-size:12px;
+
+/* FLOATING DOTS */
+.dot{
+  position:fixed;
+  width:6px;
+  height:6px;
+  background:#fff;
+  border-radius:50%;
+  animation:float 7s linear infinite;
   opacity:0.7;
+}
+@keyframes float{
+  from{transform:translateY(110vh)}
+  to{transform:translateY(-10vh)}
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="fireworks"></canvas>
+<div class="bg"></div>
+<canvas id="fw"></canvas>
 
-<div class="container">
-  <div class="card">
+<div class="wrap">
+  <div class="card" id="card">
     <h1>🎉 Happy New Year 🎉</h1>
 
-    <input type="text" id="name" placeholder="Enter your name">
+    <input id="name" placeholder="Enter Your Name">
     <input type="file" id="photo" accept="image/*">
 
-    <button onclick="generate()">Generate Wishes</button>
+    <button onclick="make()">Generate 3D Magic ✨</button>
 
-    <div class="result" id="result">
-      <img id="preview">
-      <div class="wish" id="wishText"></div>
+    <div class="result" id="res">
+      <img id="img">
+      <div class="wish" id="wish"></div>
     </div>
-
-    <div class="footer">✨ Made with ❤️ | Ultra Pro Max ✨</div>
   </div>
 </div>
 
 <script>
-// FIREWORKS
-const canvas = document.getElementById("fireworks");
-const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+// 3D CARD TILT
+const card=document.getElementById("card");
+document.addEventListener("mousemove",e=>{
+  let x=(window.innerWidth/2-e.clientX)/25;
+  let y=(window.innerHeight/2-e.clientY)/25;
+  card.style.transform=`rotateY(${x}deg) rotateX(${y}deg)`;
+});
 
-let particles=[];
-function firework(){
-  let x=Math.random()*canvas.width;
-  let y=Math.random()*canvas.height/2;
-  for(let i=0;i<60;i++){
-    particles.push({
+// FLOATING DOTS
+for(let i=0;i<50;i++){
+  let d=document.createElement("div");
+  d.className="dot";
+  d.style.left=Math.random()*100+"%";
+  d.style.animationDelay=Math.random()*7+"s";
+  document.body.appendChild(d);
+}
+
+// FIREWORKS
+const c=document.getElementById("fw");
+const ctx=c.getContext("2d");
+c.width=innerWidth;
+c.height=innerHeight;
+let p=[];
+function blast(){
+  let x=Math.random()*c.width;
+  let y=Math.random()*c.height/2;
+  for(let i=0;i<120;i++){
+    p.push({
       x,y,
-      vx:(Math.random()-0.5)*6,
-      vy:(Math.random()-0.5)*6,
-      life:100,
-      color:`hsl(${Math.random()*360},100%,60%)`
+      vx:(Math.random()-0.5)*9,
+      vy:(Math.random()-0.5)*9,
+      life:120,
+      col:`hsl(${Math.random()*360},100%,60%)`
     });
   }
 }
-function animate(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  particles.forEach((p,i)=>{
-    p.x+=p.vx;
-    p.y+=p.vy;
-    p.life--;
-    ctx.fillStyle=p.color;
+function draw(){
+  ctx.clearRect(0,0,c.width,c.height);
+  p.forEach((a,i)=>{
+    a.x+=a.vx;
+    a.y+=a.vy;
+    a.life--;
+    ctx.fillStyle=a.col;
     ctx.beginPath();
-    ctx.arc(p.x,p.y,2,0,Math.PI*2);
+    ctx.arc(a.x,a.y,2.8,0,Math.PI*2);
     ctx.fill();
-    if(p.life<=0)particles.splice(i,1);
+    if(a.life<=0)p.splice(i,1);
   });
-  requestAnimationFrame(animate);
+  requestAnimationFrame(draw);
 }
-setInterval(firework,900);
-animate();
+setInterval(blast,700);
+draw();
 
 // GENERATE
-function generate(){
-  let name=document.getElementById("name").value;
-  let file=document.getElementById("photo").files[0];
-  if(!name||!file){
-    alert("Name aur Photo dono daalo!");
-    return;
-  }
-  let reader=new FileReader();
-  reader.onload=()=>{
-    document.getElementById("preview").src=reader.result;
-    document.getElementById("wishText").innerHTML=
-      `✨ Happy New Year <span style="color:#00ffff">${name}</span> ✨<br>
-      May your life shine brighter than fireworks 🎆`;
-    document.getElementById("result").style.display="block";
-    firework();
+function make(){
+  if(!name.value||!photo.files[0]){alert("Name aur Photo dono daalo");return;}
+  let r=new FileReader();
+  r.onload=()=>{
+    img.src=r.result;
+    wish.innerHTML=`✨ Happy New Year <span style="color:#00ffff">${name.value}</span> ✨<br>3D vibes only 🎆`;
+    res.style.display="block";
+    blast();
   };
-  reader.readAsDataURL(file);
+  r.readAsDataURL(photo.files[0]);
 }
 </script>
 
